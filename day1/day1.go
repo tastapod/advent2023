@@ -38,9 +38,9 @@ func findIntOrName(input string) int {
 	if result := findInt(input); result != -1 {
 		return result
 	}
-	for i, word := range DigitWords {
+	for pos, word := range DigitWords {
 		if strings.HasPrefix(input, word) {
-			return i
+			return pos
 		}
 	}
 	return -1
@@ -49,8 +49,7 @@ func findIntOrName(input string) int {
 func sumEnds(lines []string, findInt FindInt) int {
 	var total = 0
 	for _, line := range lines {
-		num := findEndDigits(line, findInt)
-		total += num
+		total += findEndDigits(line, findInt)
 	}
 	return total
 }
