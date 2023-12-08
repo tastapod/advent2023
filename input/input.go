@@ -15,3 +15,7 @@ func ForDay(day int) string {
 	}
 	return strings.TrimSpace(string(content))
 }
+
+func LinesForDay(day int) []string {
+	return strings.Split(ForDay(day), "\n")
+}
