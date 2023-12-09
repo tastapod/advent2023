@@ -34,11 +34,14 @@ func TestFindsPartNumbers(t *testing.T) {
 	finder := NewPartNumberFinder([]string{"...123...456*..."})
 	assert.Equal(t, []int{456}, finder.findPartNumbers())
 
+	// symbol before
 	finder = NewPartNumberFinder([]string{
 		"....@...........",
 		"...123...456*...",
 	})
 	assert.Equal(t, []int{123, 456}, finder.findPartNumbers())
+
+	// symbol after
 	finder = NewPartNumberFinder([]string{
 		"...123...456....",
 		"..*.........@...",
@@ -49,4 +52,12 @@ func TestFindsPartNumbers(t *testing.T) {
 func TestSumsPartNumbers(t *testing.T) {
 	finder := NewPartNumberFinder(sampleSchematic)
 	assert.Equal(t, 4361, finder.SumPartNumbers())
+}
+
+func TestFindsGears(t *testing.T) {
+	finder := NewPartNumberFinder([]string{
+		"...200*300...456....",
+		"..*.........@.......",
+	})
+	assert.Equal(t, 60000, finder.SumGears())
 }

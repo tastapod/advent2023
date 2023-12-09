@@ -59,9 +59,11 @@ func (f *PartNumberFinder) hasAdjacentSymbol(lineNo int, idx []int) bool {
 	if isSymbol(line[start-1]) || isSymbol(line[end]) {
 		return true
 	}
+	// check line above
 	if containsSymbol(idx, f.schematic[lineNo-1]) {
 		return true
 	}
+	// check line below
 	if containsSymbol(idx, f.schematic[lineNo+1]) {
 		return true
 	}
@@ -86,4 +88,43 @@ func containsSymbol(idx []int, line string) bool {
 
 func isSymbol(ch byte) bool {
 	return ch != '.' && !strings.Contains("0123456789", string(rune(ch)))
+}
+
+type Index struct {
+	lineNo, pos int
+}
+
+func (f *PartNumberFinder) SumGears() (result int) {
+	stars := map[Index][]int{}
+
+	checkStar := func(lineNo, pos, value int) {
+		bytes := []byte(f.schematic[lineNo])
+		if bytes[pos] == '*' {
+			index := Index{lineNo, pos}
+			stars[index] = append(stars[index], value)
+		}
+	}
+
+	for lineNo, line := range f.schematic {
+		idxs := NumberRE.FindAllIndex([]byte(line), -1)
+		// iterate over all numbers
+		for _, idx := range idxs {
+			value, _ := strconv.Atoi(line[idx[0]:idx[1]])
+
+			// find all stars around number
+			checkStar(lineNo, idx[0]-1, value)
+			checkStar(lineNo, idx[1], value)
+			for i := idx[0] - 1; i <= idx[1]; i++ {
+				checkStar(lineNo-1, i, value)
+				checkStar(lineNo+1, i, value)
+			}
+		}
+	}
+
+	for _, values := range stars {
+		if len(values) == 2 {
+			result += values[0] * values[1]
+		}
+	}
+	return
 }

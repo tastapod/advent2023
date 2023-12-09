@@ -28,4 +28,5 @@ func solveDay2() {
 func solveDay3() {
 	lines := input.LinesForDay(3)
 	println("Answer for day 3 part 1: ", day3.NewPartNumberFinder(lines).SumPartNumbers()) // 530495
+	println("Answer for day 3 part 2: ", day3.NewPartNumberFinder(lines).SumGears())       // 80253814
 }
