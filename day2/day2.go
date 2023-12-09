@@ -1,7 +1,7 @@
 package day2
 
 import (
-	"strconv"
+	"github.com/tastapod/advent2023/convert"
 	"strings"
 )
 
@@ -37,7 +37,7 @@ type DrawOperation func(game, turn, drawNum int, draw Draw) (finished bool)
 
 func parseGameLine(gameLine string, processDraw DrawOperation) {
 	parts := strings.Split(gameLine, ": ") // ["Game n", turnStr]
-	game, _ := strconv.Atoi(parts[0][5:])
+	game := convert.ToInt(parts[0][5:])
 	turnStr := strings.Split(parts[1], "; ") // ["3 red, 1 blue", "2 blue", ...]
 
 	for iTurn, drawsStr := range turnStr {
@@ -55,7 +55,7 @@ func parseGameLine(gameLine string, processDraw DrawOperation) {
 /* parse "3 red" */
 func parseDraw(count string) (draw Draw) {
 	parts := strings.Split(count, " ")
-	draw.num, _ = strconv.Atoi(parts[0])
+	draw.num = convert.ToInt(parts[0])
 	draw.colour = parts[1]
 	return
 }

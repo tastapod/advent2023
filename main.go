@@ -5,6 +5,7 @@ import (
 	"github.com/tastapod/advent2023/day2"
 	"github.com/tastapod/advent2023/day3"
 	"github.com/tastapod/advent2023/day4"
+	"github.com/tastapod/advent2023/day5"
 	"github.com/tastapod/advent2023/input"
 )
 
@@ -13,6 +14,7 @@ func main() {
 	solveDay2()
 	solveDay3()
 	solveDay4()
+	solveDay5()
 }
 
 func solveDay1() {
@@ -37,4 +39,9 @@ func solveDay4() {
 	lines := input.LinesForDay(4)
 	println("Answer for day 4 part 1: ", day4.SumScratchCards(lines))  // 19855
 	println("Answer for day 4 part 2: ", day4.MoarScratchCards(lines)) // 10378710
+}
+
+func solveDay5() {
+	almanac := input.ForDay(5)
+	println("Answer for day 5 part 1: ", day5.FindSmallestLocation(almanac)) // 19855
 }

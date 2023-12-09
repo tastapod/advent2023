@@ -1,8 +1,8 @@
 package day4
 
 import (
+	"github.com/tastapod/advent2023/convert"
 	"math"
-	"strconv"
 	"strings"
 )
 
@@ -18,16 +18,16 @@ func NewScratchCard(line string) (s *ScratchCard) {
 	s = &ScratchCard{winningNumbers: make(map[int]bool)}
 
 	// parse card number
-	s.number = toInt(strings.Fields(parts2[0])[1])
+	s.number = convert.ToInt(strings.Fields(parts2[0])[1])
 
 	// parse winning numbers
 	for _, num := range strings.Fields(parts2[1]) {
-		s.winningNumbers[toInt(num)] = true
+		s.winningNumbers[convert.ToInt(num)] = true
 	}
 
 	// count winners
 	for _, num := range strings.Fields(parts[1]) {
-		if s.winningNumbers[toInt(num)] {
+		if s.winningNumbers[convert.ToInt(num)] {
 			s.numWinners++
 		}
 	}
@@ -36,11 +36,6 @@ func NewScratchCard(line string) (s *ScratchCard) {
 
 func (s *ScratchCard) score() int {
 	return int(math.Pow(2, float64(s.numWinners-1)))
-}
-
-func toInt(num string) int {
-	value, _ := strconv.Atoi(num)
-	return value
 }
 
 func SumScratchCards(scratchCards []string) (total int) {

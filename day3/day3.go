@@ -1,8 +1,8 @@
 package day3
 
 import (
+	"github.com/tastapod/advent2023/convert"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -32,7 +32,7 @@ func (f *PartNumberFinder) findNumbers() (result []int) {
 	for _, line := range f.schematic {
 		idxs := NumberRE.FindAllIndex([]byte(line), -1)
 		for _, idx := range idxs {
-			value, _ := strconv.Atoi(line[idx[0]:idx[1]])
+			value := convert.ToInt(line[idx[0]:idx[1]])
 			result = append(result, value)
 		}
 	}
@@ -44,7 +44,7 @@ func (f *PartNumberFinder) findPartNumbers() (result []int) {
 		idxs := NumberRE.FindAllIndex([]byte(line), -1)
 		for _, idx := range idxs {
 			if f.hasAdjacentSymbol(lineNo, idx) {
-				value, _ := strconv.Atoi(line[idx[0]:idx[1]])
+				value := convert.ToInt(line[idx[0]:idx[1]])
 				result = append(result, value)
 			}
 		}
@@ -109,7 +109,7 @@ func (f *PartNumberFinder) SumGears() (result int) {
 		idxs := NumberRE.FindAllIndex([]byte(line), -1)
 		// iterate over all numbers
 		for _, idx := range idxs {
-			value, _ := strconv.Atoi(line[idx[0]:idx[1]])
+			value := convert.ToInt(line[idx[0]:idx[1]])
 
 			// find all stars around number
 			checkStar(lineNo, idx[0]-1, value)
