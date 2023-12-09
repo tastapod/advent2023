@@ -8,8 +8,8 @@ import (
 
 func TestCountsWinningNumbers(t *testing.T) {
 	line := "Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53"
-	scratchCard := ScratchCard{line}
-	assert.Equal(t, 8, scratchCard.evaluate())
+	scratchCard := NewScratchCard(line)
+	assert.Equal(t, 8, scratchCard.score())
 }
 
 var sampleInput = strings.Split(strings.TrimSpace(`
@@ -23,4 +23,8 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 
 func TestSumsScratchCards(t *testing.T) {
 	assert.Equal(t, 13, SumScratchCards(sampleInput))
+}
+
+func TestAddsExtraScratchCards(t *testing.T) {
+	assert.Equal(t, 30, MoarScratchCards(sampleInput))
 }

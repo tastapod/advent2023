@@ -35,5 +35,6 @@ func solveDay3() {
 
 func solveDay4() {
 	lines := input.LinesForDay(4)
-	println("Answer for day 4 part 1: ", day4.SumScratchCards(lines)) //
+	println("Answer for day 4 part 1: ", day4.SumScratchCards(lines))  // 19855
+	println("Answer for day 4 part 2: ", day4.MoarScratchCards(lines)) // 10378710
 }
