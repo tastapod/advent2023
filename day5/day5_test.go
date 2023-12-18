@@ -14,7 +14,7 @@ seed-to-soil map:
 50 98 2
 52 50 48
 `)
-	almanac := NewAlmanac(input)
+	almanac := NewPointAlmanac(input)
 	assert.Equal(t, 1, len(almanac.maps))
 	assert.Equal(t, 2, len(almanac.maps["seed"].mappings))
 	assert.Equal(t, []int{79, 14, 55, 13}, almanac.seeds)
@@ -42,7 +42,7 @@ func TestMappingMapsValues(t *testing.T) {
 }
 
 func TestRangeMapMapsValues(t *testing.T) {
-	m := NewRangeMap(strings.TrimSpace(`
+	m := NewResourceMap(strings.TrimSpace(`
 seed-to-soil map:
 50 98 2
 52 50 48
@@ -53,6 +53,8 @@ seed-to-soil map:
 	assert.Equal(t, 57, m.MapValue(55))
 	assert.Equal(t, 13, m.MapValue(13))
 }
+
+//seeds: 79 14 55 13
 
 var sampleAlmanac = strings.TrimSpace(`
 seeds: 79 14 55 13
@@ -91,7 +93,7 @@ humidity-to-location map:
 `)
 
 func TestFindsLocationForSeed(t *testing.T) {
-	almanac := NewAlmanac(sampleAlmanac)
+	almanac := NewPointAlmanac(sampleAlmanac)
 	assert.Equal(t, 82, almanac.FindLocation(79))
 	assert.Equal(t, 43, almanac.FindLocation(14))
 	assert.Equal(t, 86, almanac.FindLocation(55))
@@ -100,4 +102,45 @@ func TestFindsLocationForSeed(t *testing.T) {
 
 func TestFindsSmallestLocation(t *testing.T) {
 	assert.Equal(t, 35, FindSmallestLocation(sampleAlmanac))
+}
+
+func TestSplitsRangeBasedOnMapping(t *testing.T) {
+	var mapping = NewMapping("200 100 10") // 100 -> 200
+	var result RangeGroup
+
+	// below range
+	result = mapping.apply([]Range{{5, 3}})
+	assert.Equal(t, []Range{{5, 3}}, result.unmapped)
+	assert.Empty(t, result.mapped)
+
+	// above range
+	result = mapping.apply([]Range{{150, 3}})
+	assert.Equal(t, []Range{{150, 3}}, result.unmapped)
+	assert.Empty(t, result.mapped)
+
+	// inside range
+	result = mapping.apply([]Range{{101, 3}})
+	assert.Empty(t, result.unmapped)
+	assert.Equal(t, []Range{{201, 3}}, result.mapped)
+
+	// overlap below
+	result = mapping.apply([]Range{{95, 10}})
+	assert.Equal(t, []Range{{95, 5}}, result.unmapped)
+	assert.Equal(t, []Range{{200, 5}}, result.mapped)
+
+	// overlap above
+	result = mapping.apply([]Range{{108, 12}})
+	assert.Equal(t, []Range{{110, 10}}, result.unmapped)
+	assert.Equal(t, []Range{{208, 2}}, result.mapped)
+}
+
+func TestSplitsMultipleRanges(t *testing.T) {
+	mapping := NewMapping("49 53 8")
+	result := mapping.apply([]Range{{57, 13}})
+	assert.Equal(t, []Range{{61, 9}}, result.unmapped)
+	assert.Equal(t, []Range{{53, 4}}, result.mapped)
+}
+
+func TestFindsSmallestLocationForAnySeed(t *testing.T) {
+	assert.Equal(t, 46, FindSmallestMappedLocation(sampleAlmanac))
 }

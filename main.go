@@ -43,5 +43,6 @@ func solveDay4() {
 
 func solveDay5() {
 	almanac := input.ForDay(5)
-	println("Answer for day 5 part 1: ", day5.FindSmallestLocation(almanac)) // 19855
+	println("Answer for day 5 part 1: ", day5.FindSmallestLocation(almanac)) // 600279879
+	//println("Answer for day 5 part 2: ", day5.FindSmallestMappedLocation(almanac)) //
 }
