@@ -8,6 +8,7 @@ import (
 	"github.com/tastapod/advent2023/day4"
 	"github.com/tastapod/advent2023/day5"
 	"github.com/tastapod/advent2023/day6"
+	"github.com/tastapod/advent2023/day7"
 	"github.com/tastapod/advent2023/input"
 )
 
@@ -18,6 +19,7 @@ func main() {
 	solveDay4()
 	solveDay5()
 	solveDay6()
+	solveDay7()
 }
 
 func solveDay1() {
@@ -55,5 +57,11 @@ func solveDay6() {
 	fmt.Println("Answer for day 6 part 1: ", day6.NewRaceData(data).CalculateProductOfWins()) // 114400
 
 	var bigRace = day6.Race{Time: 35937366, DistanceRecord: 212206012011044}
-	fmt.Println("Answer for day 6 part 2", bigRace.CountWaysToWin()) // 21039729
+	fmt.Println("Answer for day 6 part 2: ", bigRace.CountWaysToWin()) // 21039729
+}
+
+func solveDay7() {
+	lines := input.LinesForDay(7)
+	fmt.Println("Answer for day 7 part 1: ", day7.NewSimpleRound(lines).Score())
+	fmt.Println("Answer for day 7 part 2: ", day7.NewJokerRound(lines).Score())
 }
