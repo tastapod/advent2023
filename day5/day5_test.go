@@ -109,39 +109,38 @@ func TestSplitsRangeBasedOnMapping(t *testing.T) {
 	var result RangeGroup
 
 	// below range
-	result = mapping.apply([]Range{{5, 3}})
-	assert.Equal(t, []Range{{5, 3}}, result.unmapped)
+	result = mapping.apply([]Range{{5, 8}})
+	assert.Equal(t, []Range{{5, 8}}, result.unmapped)
 	assert.Empty(t, result.mapped)
 
 	// above range
-	result = mapping.apply([]Range{{150, 3}})
-	assert.Equal(t, []Range{{150, 3}}, result.unmapped)
+	result = mapping.apply([]Range{{150, 152}})
+	assert.Equal(t, []Range{{150, 152}}, result.unmapped)
 	assert.Empty(t, result.mapped)
 
 	// inside range
-	result = mapping.apply([]Range{{101, 3}})
+	result = mapping.apply([]Range{{101, 103}})
 	assert.Empty(t, result.unmapped)
-	assert.Equal(t, []Range{{201, 3}}, result.mapped)
+	assert.Equal(t, []Range{{201, 203}}, result.mapped)
 
 	// overlap below
-	result = mapping.apply([]Range{{95, 10}})
-	assert.Equal(t, []Range{{95, 5}}, result.unmapped)
-	assert.Equal(t, []Range{{200, 5}}, result.mapped)
+	result = mapping.apply([]Range{{95, 104}})
+	assert.Equal(t, []Range{{95, 99}}, result.unmapped)
+	assert.Equal(t, []Range{{200, 204}}, result.mapped)
 
 	// overlap above
-	result = mapping.apply([]Range{{108, 12}})
-	assert.Equal(t, []Range{{110, 10}}, result.unmapped)
-	assert.Equal(t, []Range{{208, 2}}, result.mapped)
+	result = mapping.apply([]Range{{108, 120}})
+	assert.Equal(t, []Range{{110, 120}}, result.unmapped)
+	assert.Equal(t, []Range{{208, 209}}, result.mapped)
 }
 
 func TestSplitsMultipleRanges(t *testing.T) {
 	mapping := NewMapping("49 53 8")
-	result := mapping.apply([]Range{{57, 13}})
-	assert.Equal(t, []Range{{61, 9}}, result.unmapped)
-	assert.Equal(t, []Range{{53, 4}}, result.mapped)
+	result := mapping.apply([]Range{{57, 69}})
+	assert.Equal(t, []Range{{61, 69}}, result.unmapped)
+	assert.Equal(t, []Range{{53, 56}}, result.mapped)
 }
 
 func TestFindsSmallestLocationForAnySeed(t *testing.T) {
-	t.Skip("What am I missing here?")
 	assert.Equal(t, 46, FindSmallestMappedLocation(sampleAlmanac))
 }

@@ -8,27 +8,34 @@ import (
 )
 
 type Mapping struct {
-	dest, source, length int
+	dstStart, srcStart, length int
 }
 
 func (m Mapping) Contains(value int) bool {
-	return value >= m.source && value < m.source+m.length
+	return value >= m.srcStart && value < m.srcStart+m.length
 }
 
 func (m Mapping) MapValue(value int) (int, bool) {
 	if m.Contains(value) {
-		return value - m.source + m.dest, true
+		return value - m.srcStart + m.dstStart, true
 	} else {
 		return value, false
 	}
 }
 
-type Range struct {
-	first, length int
+func (m Mapping) String() string {
+	return fmt.Sprintf("mapping: [%d..%d] -> [%d..%d]",
+		m.srcStart, m.srcStart+m.length-1,
+		m.dstStart, m.dstStart+m.length-1)
+
 }
 
-func (r Range) last() int {
-	return r.first + r.length - 1
+type Range struct {
+	first, last int
+}
+
+func (r Range) length() int {
+	return r.last + r.first + 1
 }
 
 type RangeGroup struct {
@@ -39,48 +46,46 @@ func (m Mapping) apply(inputs []Range) (result RangeGroup) {
 	result = RangeGroup{}
 
 	for _, input := range inputs {
-		if input.last() < m.source || input.first > m.sourceLast() {
+		if input.last < m.srcStart || input.first > m.sourceLast() {
 			// no overlap
-			result.unmapped = inputs
-		} else {
-			// overlapping
+			result.unmapped = append(result.unmapped, input)
+			continue
+		}
 
-			if input.first < m.source {
-				// unmapped range at the beginning
-				result.unmapped = append(result.unmapped, Range{input.first, m.source - input.first})
-			}
+		// overlapping
 
-			// overlap
-			first := max(input.first, m.source)
-			last := min(input.last(), m.sourceLast())
-			length := last - first + 1
-			dest := m.dest + first - m.source
-			result.mapped = append(result.mapped, Range{dest, length})
+		// check for unmapped range at the beginning
+		if input.first < m.srcStart {
+			result.unmapped = append(result.unmapped, Range{input.first, min(input.last, m.srcStart-1)})
+		}
 
-			if input.last() > m.sourceLast() {
-				// unmapped range at the end
-				result.unmapped = append(result.unmapped, Range{
-					first:  input.first + length,
-					length: input.length - length})
-			}
+		// overlap
+		first := max(input.first, m.srcStart)
+		last := min(input.last, m.sourceLast())
+		shift := m.dstStart - m.srcStart
+		result.mapped = append(result.mapped, Range{first + shift, last + shift})
+
+		// check for unmapped range at the end
+		if input.last > m.sourceLast() {
+			result.unmapped = append(result.unmapped, Range{
+				first: m.sourceLast() + 1,
+				last:  input.last})
 		}
 	}
-	//fmt.Printf("%v on %v\n-> %v\n", m, inputs, result)
-
 	return
 }
 
 // sourceLast returns the highest inclusive value in the source range
 func (m Mapping) sourceLast() int {
-	return m.source + m.length - 1
+	return m.srcStart + m.length - 1
 }
 
 func NewMapping(mappingChunk string) Mapping {
 	fields := strings.Fields(mappingChunk)
 	return Mapping{
-		dest:   convert.ToInt(fields[0]),
-		source: convert.ToInt(fields[1]),
-		length: convert.ToInt(fields[2]),
+		dstStart: convert.ToInt(fields[0]),
+		srcStart: convert.ToInt(fields[1]),
+		length:   convert.ToInt(fields[2]),
 	}
 }
 
@@ -191,7 +196,6 @@ type RangeAlmanac struct {
 func (a RangeAlmanac) findSmallestMappedLocation() (result int) {
 	ranges := a.seedRanges
 	for _, resourceMap := range a.maps {
-		fmt.Printf("%s = %v\n", resourceMap.srcName, ranges)
 		ranges = resourceMap.Apply(ranges)
 	}
 
@@ -214,9 +218,9 @@ func NewRangeAlmanac(input string) (a RangeAlmanac) {
 
 	// parse seed ranges
 	for i := 0; i < len(seedLine)/2; i++ {
-		start := convert.ToInt(seedLine[i*2])
+		first := convert.ToInt(seedLine[i*2])
 		length := convert.ToInt(seedLine[i*2+1])
-		a.seedRanges[i] = Range{start, length}
+		a.seedRanges[i] = Range{first, first + length - 1}
 	}
 
 	// parse each resource map
