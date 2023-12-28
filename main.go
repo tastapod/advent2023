@@ -64,13 +64,13 @@ func solveDay6() {
 
 func solveDay7() {
 	lines := input.LinesForDay(7)
-	fmt.Println("Answer for day 7 part 1: ", day7.NewSimpleRound(lines).Score())
-	fmt.Println("Answer for day 7 part 2: ", day7.NewJokerRound(lines).Score())
+	fmt.Println("Answer for day 7 part 1: ", day7.NewSimpleRound(lines).Score()) // 255048101
+	fmt.Println("Answer for day 7 part 2: ", day7.NewJokerRound(lines).Score())  // 253718286
 }
 
 func solveDay8() {
 	mapInput := input.ForDay(8)
 	nodeMap := day8.NewNodeMap(mapInput)
-	fmt.Println("Answer for day 8 part 1: ", nodeMap.CountStepsToZZZ("AAA"))
-	fmt.Println("Answer for day 8 part 2: ", nodeMap.CountGhostSteps())
+	fmt.Println("Answer for day 8 part 1: ", nodeMap.CountStepsToZZZ("AAA")) // 14681
+	fmt.Println("Answer for day 8 part 2: ", nodeMap.CountGhostSteps())      // 14321394058031
 }

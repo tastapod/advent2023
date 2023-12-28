@@ -1,7 +1,7 @@
 package day8
 
 import (
-	"fmt"
+	"github.com/tastapod/advent2023/fn"
 	"strings"
 )
 
@@ -62,17 +62,15 @@ func (m *NodeMap) CountGhostSteps() (steps int) {
 			startNodes = append(startNodes, key)
 		}
 	}
-	println("Starting with", len(startNodes), "nodes")
 
 	// Identify cycle for each ghost node
 	loopCounts := make([]int, len(startNodes))
 	for i, key := range startNodes {
 		loopCounts[i] = m.CountStepsToAnyZ(key)
 	}
-	fmt.Printf("Counts: %v\n", loopCounts)
 
 	// this only works because each ghost loops in a cycle
-	return LcmMany(loopCounts)
+	return LcmReduce(loopCounts)
 }
 
 func NewNodeMap(input string) (result NodeMap) {
@@ -96,14 +94,6 @@ func NewNodeMap(input string) (result NodeMap) {
 	return
 }
 
-func GcdMany(values []int) (result int) {
-	result = values[0]
-	for i := 1; i < len(values); i++ {
-		result = Gcd(result, values[i])
-	}
-	return
-}
-
 func Gcd(v1, v2 int) int {
 	big := max(v1, v2)
 	small := min(v1, v2)
@@ -119,14 +109,12 @@ func Gcd(v1, v2 int) int {
 	return big // or small
 }
 
-func Lcm(v1, v2 int) int {
-	return (v1 / Gcd(v1, v2)) * v2
+func LcmReduce(values []int) (result int) {
+	return fn.Reduce(values, func(v1 int, v2 int) int {
+		return Lcm(v1, v2)
+	})
 }
 
-func LcmMany(values []int) (result int) {
-	result = values[0]
-	for i := 1; i < len(values); i++ {
-		result = Lcm(result, values[i])
-	}
-	return
+func Lcm(v1, v2 int) int {
+	return (v1 / Gcd(v1, v2)) * v2
 }

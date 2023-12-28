@@ -47,10 +47,9 @@ func TestFollowsGhostPath(t *testing.T) {
 
 func TestCalculatesGCD(t *testing.T) {
 	assert.Equal(t, 5, Gcd(25, 35))
-	assert.Equal(t, 13, GcdMany([]int{26, 39, 52}))
 }
 
 func TestCalculatesLCM(t *testing.T) {
 	assert.Equal(t, 175, Lcm(25, 35))
-	assert.Equal(t, 156, LcmMany([]int{26, 39, 52}))
+	assert.Equal(t, 156, LcmReduce([]int{26, 39, 52}))
 }
