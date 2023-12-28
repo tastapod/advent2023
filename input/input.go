@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ForDay(day int) string {
+func ReadDay(day int) string {
 	dayFile := filepath.Join(fmt.Sprintf("day%d", day), fmt.Sprintf("day%d.txt", day))
 	content, err := os.ReadFile(dayFile)
 	if err != nil {
@@ -16,6 +16,6 @@ func ForDay(day int) string {
 	return strings.TrimSpace(string(content))
 }
 
-func ForDaySplit(day int) []string {
-	return strings.Split(ForDay(day), "\n")
+func ReadAndSplitDay(day int) []string {
+	return strings.Split(ReadDay(day), "\n")
 }
