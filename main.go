@@ -9,6 +9,7 @@ import (
 	"github.com/tastapod/advent2023/day5"
 	"github.com/tastapod/advent2023/day6"
 	"github.com/tastapod/advent2023/day7"
+	"github.com/tastapod/advent2023/day8"
 	"github.com/tastapod/advent2023/input"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	solveDay5()
 	solveDay6()
 	solveDay7()
+	solveDay8()
 }
 
 func solveDay1() {
@@ -64,4 +66,11 @@ func solveDay7() {
 	lines := input.LinesForDay(7)
 	fmt.Println("Answer for day 7 part 1: ", day7.NewSimpleRound(lines).Score())
 	fmt.Println("Answer for day 7 part 2: ", day7.NewJokerRound(lines).Score())
+}
+
+func solveDay8() {
+	mapInput := input.ForDay(8)
+	nodeMap := day8.NewNodeMap(mapInput)
+	fmt.Println("Answer for day 8 part 1: ", nodeMap.CountStepsToZZZ("AAA"))
+	fmt.Println("Answer for day 8 part 2: ", nodeMap.CountGhostSteps())
 }
