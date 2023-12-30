@@ -21,3 +21,13 @@ var sequences = strings.Split(strings.TrimSpace(`
 func TestSumsNextValues(t *testing.T) {
 	assert.Equal(t, 114, SumNextValues(sequences))
 }
+
+func TestFindsPreviousValue(t *testing.T) {
+	assert.Equal(t, -3, NewPredictor("0 3 6 9 12 15").PreviousValue())
+	assert.Equal(t, 0, NewPredictor("1 3 6 10 15 21").PreviousValue())
+	assert.Equal(t, 5, NewPredictor("10 13 16 21 30 45").PreviousValue())
+}
+
+func TestSumsPreviousValues(t *testing.T) {
+	assert.Equal(t, 2, SumPreviousValues(sequences))
+}

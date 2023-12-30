@@ -80,4 +80,5 @@ func solveDay8() {
 func solveDay9() {
 	lines := input.ReadAndSplitDay(9)
 	fmt.Println("Answer for day 9 part 1: ", day9.SumNextValues(lines))
+	fmt.Println("Answer for day 9 part 2: ", day9.SumPreviousValues(lines))
 }
