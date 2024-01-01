@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/tastapod/advent2023/day1"
+	"github.com/tastapod/advent2023/day10"
 	"github.com/tastapod/advent2023/day2"
 	"github.com/tastapod/advent2023/day3"
 	"github.com/tastapod/advent2023/day4"
@@ -24,6 +25,7 @@ func main() {
 	solveDay7()
 	solveDay8()
 	solveDay9()
+	solveDay10()
 }
 
 func solveDay1() {
@@ -81,4 +83,10 @@ func solveDay9() {
 	lines := input.ReadAndSplitDay(9)
 	fmt.Println("Answer for day 9 part 1: ", day9.SumNextValues(lines))
 	fmt.Println("Answer for day 9 part 2: ", day9.SumPreviousValues(lines))
+}
+
+func solveDay10() {
+	rows := input.ReadAndSplitDay(10)
+	sketch := day10.NewSketch(rows)
+	fmt.Println("Answer for day 10 part 1: ", sketch.FurthestPoint())
 }
