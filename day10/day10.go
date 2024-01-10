@@ -5,45 +5,63 @@ import (
 	"strings"
 )
 
+type Direction rune
+
+func (d Direction) String() string {
+	return string(d)
+}
+
 const (
-	N = 'N'
-	S = 'S'
-	W = 'W'
-	E = 'E'
+	N Direction = 'N'
+	S Direction = 'S'
+	W Direction = 'W'
+	E Direction = 'E'
 )
 
 type Pipe struct {
-	End1, End2 byte
+	End1, End2 Direction
 }
 
-// TravelFrom maps the entry point to a corresponding exit point.
+func (p Pipe) String() string {
+	return fmt.Sprintf("%s-%s", string(p.End1), string(p.End2))
+}
+
+// Route maps an entry point to a corresponding exit point.
 //
-// Travelling e.g. S means you enter the pipe from the N,
-// so the Pipe switches the direction so that the travel makes sense.
-func (c Pipe) TravelFrom(direction byte) byte {
-	var end byte
-	switch direction {
+// Travelling e.g. south means you enter the pipe from N.
+func (p Pipe) Route(heading Direction) (result Direction, err error) {
+	// map heading to pipe end
+	var pipeEnd Direction
+	switch heading {
 	case N:
-		end = S
+		pipeEnd = S
 	case S:
-		end = N
+		pipeEnd = N
 	case W:
-		end = E
+		pipeEnd = E
 	case E:
-		end = W
+		pipeEnd = W
 	}
-
-	switch end {
-	case c.End1:
-		return c.End2
-	case c.End2:
-		return c.End1
+	switch pipeEnd {
+	case p.End1:
+		result = p.End2
+	case p.End2:
+		result = p.End1
 	default:
-		panic(fmt.Sprintf("Unknown end %d for connector %v", direction, c))
+		err = fmt.Errorf("unknown source %s for connector %s", pipeEnd, p)
 	}
+	return
 }
 
-var Pipes = map[byte]Pipe{
+// Connects checks whether a Pipe connects with something heading in this direction
+func (p Pipe) Connects(heading Direction) bool {
+	_, err := p.Route(heading)
+	return err == nil
+}
+
+type PipeMap map[rune]Pipe
+
+var Pipes = PipeMap{
 	'|': {N, S},
 	'-': {W, E},
 	'L': {N, E},
@@ -52,66 +70,124 @@ var Pipes = map[byte]Pipe{
 	'F': {S, E},
 }
 
-type Sketch struct {
-	Grid [][]byte
+type Point struct {
+	X, Y int
 }
 
-func (s *Sketch) FurthestPoint() int {
-	row, col := s.StartPos()
-	numSteps := 0
-
-	direction := s.FirstMove(row, col)
-
-	for row, col = Move(row, col, direction); s.Grid[row][col] != 'S'; row, col = Move(row, col, direction) {
-		direction = Pipes[s.Grid[row][col]].TravelFrom(direction)
-		numSteps++
-	}
-	return (numSteps + 1) / 2
-}
-
-func (s *Sketch) FirstMove(row, col int) byte {
-
-	for _, direction := range []byte{N, S, W, E} {
-		if r, c := Move(row, col, direction); s.Grid[r][c] != '.' {
-			return direction
-		}
-	}
-	panic("No pipes found around start position")
-}
-
-func Move(row, col int, direction byte) (int, int) {
+func (p Point) Move(direction Direction) Point {
 	switch direction {
 	case N:
-		return row - 1, col
+		return Point{p.X, p.Y - 1}
 	case S:
-		return row + 1, col
+		return Point{p.X, p.Y + 1}
 	case W:
-		return row, col - 1
+		return Point{p.X - 1, p.Y}
 	case E:
-		return row, col + 1
+		return Point{p.X + 1, p.Y}
 	default:
 		panic("Unknown direction: " + string(direction))
 	}
 }
 
-func (s *Sketch) StartPos() (int, int) {
-	for r, row := range s.Grid {
-		if c := strings.Index(string(row), "S"); c != -1 {
-			return r, c
+type Sketch struct {
+	Grid [][]rune
+}
+
+func (s *Sketch) FurthestPoint() int {
+	return (len(s.MapPoints()) + 1) / 2
+}
+
+type State struct {
+	Point
+	Tile    rune
+	Heading Direction
+}
+
+func (s *State) String() string {
+	return fmt.Sprintf("(%d,%d): %s heading %s", s.X, s.Y, string(s.Tile), string(s.Heading))
+}
+
+func (s *State) Route() (result Direction, err error) {
+	if pipe, found := Pipes[s.Tile]; found {
+		result, err = pipe.Route(s.Heading)
+	} else {
+		err = fmt.Errorf("unknown tile: %s", string(s.Tile))
+	}
+	return
+}
+
+func (s *Sketch) MapPoints() (result []Point) {
+	start := s.StartPoint()
+	result = append(result, start)
+	for state := s.FirstMove(start); state.Tile != 'S'; state = s.NextMove(state) {
+		result = append(result, state.Point)
+	}
+	return
+}
+
+func (s *Sketch) FirstMove(start Point) State {
+	for _, heading := range []Direction{N, S, W, E} {
+		next := start.Move(heading)
+		tile := s.Tile(next)
+		if pipe, found := Pipes[tile]; found {
+			if pipe.Connects(heading) {
+				return State{Point: next, Tile: tile, Heading: heading}
+			}
+		}
+	}
+	panic("No first move found")
+}
+
+func (s *Sketch) NextMove(state State) State {
+	direction, err := state.Route()
+	if err != nil {
+		panic(err)
+	}
+	point := state.Point.Move(direction)
+	tile := s.Tile(point)
+	return State{
+		Point:   point,
+		Tile:    tile,
+		Heading: direction,
+	}
+}
+
+func (s *Sketch) Tile(point Point) rune {
+	return s.Grid[point.Y][point.X]
+}
+
+func (s *Sketch) StartPoint() Point {
+	for y, row := range s.Grid {
+		if x := strings.Index(string(row), "S"); x != -1 {
+			return Point{x, y}
 		}
 	}
 	panic("No start found")
+}
+
+func (s *Sketch) CalculateArea() int {
+	detSum := 0
+	border := s.MapPoints()
+	border = append(border, border[0])
+	for i := 0; i < len(border)-1; i++ {
+		detSum += det(border[i], border[i+1])
+	}
+	return detSum / 2
+}
+
+func det(p1, p2 Point) int {
+	return p1.X*p2.Y - p1.Y*p2.X
 }
 
 func NewSketch(input []string) (s Sketch) {
 	numRows := len(input)
 	numCols := len(input[0])
 	s = Sketch{
-		Grid: make([][]byte, numRows+2),
+		Grid: make([][]rune, numRows+2),
 	}
 
 	// top and bottom
-	border := make([]byte, numCols+2)
+	border := make([]rune, numCols+2)
 	for i := 0; i < len(border); i++ {
 		border[i] = '.'
 	}
@@ -119,12 +195,14 @@ func NewSketch(input []string) (s Sketch) {
 	// build the grid
 	s.Grid[0] = border
 	s.Grid[len(s.Grid)-1] = border
-	for i, line := range input {
-		gridLine := make([]byte, numCols+2)
+	for y, line := range input {
+		gridLine := make([]rune, numCols+2)
 		gridLine[0] = '.'
 		gridLine[numCols+1] = '.'
-		copy(gridLine[1:], line)
-		s.Grid[i+1] = gridLine
+		for x, ch := range line {
+			gridLine[x+1] = ch
+		}
+		s.Grid[y+1] = gridLine
 	}
 	return
 }

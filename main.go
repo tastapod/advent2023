@@ -81,12 +81,12 @@ func solveDay8() {
 
 func solveDay9() {
 	lines := input.ReadAndSplitDay(9)
-	fmt.Println("Answer for day 9 part 1: ", day9.SumNextValues(lines))
-	fmt.Println("Answer for day 9 part 2: ", day9.SumPreviousValues(lines))
+	fmt.Println("Answer for day 9 part 1: ", day9.SumNextValues(lines))     // 1708206096
+	fmt.Println("Answer for day 9 part 2: ", day9.SumPreviousValues(lines)) // 1050
 }
 
 func solveDay10() {
 	rows := input.ReadAndSplitDay(10)
 	sketch := day10.NewSketch(rows)
-	fmt.Println("Answer for day 10 part 1: ", sketch.FurthestPoint())
+	fmt.Println("Answer for day 10 part 1: ", sketch.FurthestPoint()) // 7102
 }
