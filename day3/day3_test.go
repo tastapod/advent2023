@@ -1,9 +1,10 @@
 package day3
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var sampleSchematic = strings.Split(strings.TrimSpace(`
@@ -24,29 +25,33 @@ func TestFindsNumbers(t *testing.T) {
 }
 
 func TestFindsSymbol(t *testing.T) {
-	assert.True(t, isSymbol('@'))
-	assert.False(t, isSymbol('.'))
-	assert.False(t, isSymbol('3'))
-	assert.False(t, isSymbol('9'))
+	assert := assert.New(t)
+
+	assert.True(isSymbol('@'))
+	assert.False(isSymbol('.'))
+	assert.False(isSymbol('3'))
+	assert.False(isSymbol('9'))
 }
 
 func TestFindsPartNumbers(t *testing.T) {
+	assert := assert.New(t)
+
 	finder := NewPartNumberFinder([]string{"...123...456*..."})
-	assert.Equal(t, []int{456}, finder.findPartNumbers())
+	assert.Equal([]int{456}, finder.findPartNumbers())
 
 	// symbol before
 	finder = NewPartNumberFinder([]string{
 		"....@...........",
 		"...123...456*...",
 	})
-	assert.Equal(t, []int{123, 456}, finder.findPartNumbers())
+	assert.Equal([]int{123, 456}, finder.findPartNumbers())
 
 	// symbol after
 	finder = NewPartNumberFinder([]string{
 		"...123...456....",
 		"..*.........@...",
 	})
-	assert.Equal(t, []int{123, 456}, finder.findPartNumbers())
+	assert.Equal([]int{123, 456}, finder.findPartNumbers())
 }
 
 func TestSumsPartNumbers(t *testing.T) {

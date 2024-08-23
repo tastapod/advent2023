@@ -1,9 +1,10 @@
 package day7
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var roundInput = strings.Split(strings.TrimSpace(`
@@ -15,17 +16,16 @@ QQQJA 483
 `), "\n")
 
 func TestFindsHandType(t *testing.T) {
-	checkHandType(t, HighCard, "32T8K")
-	checkHandType(t, OnePair, "32T3K")
-	checkHandType(t, TwoPairs, "32T3T")
-	checkHandType(t, ThreeOfAKind, "T2T3T")
-	checkHandType(t, FullHouse, "T2T2T")
-	checkHandType(t, FourOfAKind, "T2222")
-	checkHandType(t, FiveOfAKind, "22222")
-}
-
-func checkHandType(t *testing.T, expected int, cards string) {
-	assert.Equal(t, expected, NewSimpleHand(cards).Type())
+	checkHandType := func(expected int, cards string) {
+		assert.Equal(t, expected, NewSimpleHand(cards).Type())
+	}
+	checkHandType(HighCard, "32T8K")
+	checkHandType(OnePair, "32T3K")
+	checkHandType(TwoPairs, "32T3T")
+	checkHandType(ThreeOfAKind, "T2T3T")
+	checkHandType(FullHouse, "T2T2T")
+	checkHandType(FourOfAKind, "T2222")
+	checkHandType(FiveOfAKind, "22222")
 }
 
 func TestParsesRound(t *testing.T) {
@@ -49,12 +49,14 @@ func TestFindsHandTypeWithJokers(t *testing.T) {
 }
 
 func TestScoresCards(t *testing.T) {
+	assert := assert.New(t)
+
 	hand := JokerHand{CommonHand{"89TJK", 0}}
-	assert.Equal(t, 8, hand.CardValue(0))
-	assert.Equal(t, 9, hand.CardValue(1))
-	assert.Equal(t, 10, hand.CardValue(2))
-	assert.Equal(t, 1, hand.CardValue(3))
-	assert.Equal(t, 13, hand.CardValue(4))
+	assert.Equal(8, hand.CardValue(0))
+	assert.Equal(9, hand.CardValue(1))
+	assert.Equal(10, hand.CardValue(2))
+	assert.Equal(1, hand.CardValue(3))
+	assert.Equal(13, hand.CardValue(4))
 }
 
 func checkJokerHandType(t *testing.T, expected int, cards string) {

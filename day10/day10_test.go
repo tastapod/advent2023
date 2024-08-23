@@ -7,23 +7,24 @@ import (
 )
 
 func TestConnectsPipeEnds(t *testing.T) {
+	assert := assert.New(t)
 	p := Pipe{S, E}
 
 	// enter heading north
 	result, err := p.Route(N)
-	if assert.NoError(t, err) {
-		assert.Equal(t, E, result)
+	if assert.NoError(err) {
+		assert.Equal(E, result)
 	}
 
 	// enter heading west
 	result, err = p.Route(W)
-	if assert.NoError(t, err) {
-		assert.Equal(t, S, result)
+	if assert.NoError(err) {
+		assert.Equal(S, result)
 	}
 
 	// enter heading east (impossible)
 	result, err = p.Route(E)
-	assert.Error(t, err)
+	assert.Error(err)
 }
 
 var simpleLoop = strings.Split(strings.TrimSpace(`

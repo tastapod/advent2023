@@ -15,10 +15,12 @@ ZZZ = (ZZZ, ZZZ)
 `)
 
 func TestParsesInput(t *testing.T) {
+	assert := assert.New(t)
+
 	nodeMap := NewNodeMap(sampleInput)
-	assert.Equal(t, 3, len(nodeMap.Nodes))
-	assert.Equal(t, Key("AAA"), nodeMap.Turn("BBB", 'L'))
-	assert.Equal(t, Key("ZZZ"), nodeMap.Turn("ZZZ", 'R'))
+	assert.Equal(3, len(nodeMap.Nodes))
+	assert.Equal(Key("AAA"), nodeMap.Turn("BBB", 'L'))
+	assert.Equal(Key("ZZZ"), nodeMap.Turn("ZZZ", 'R'))
 }
 
 func TestFollowsDirections(t *testing.T) {
